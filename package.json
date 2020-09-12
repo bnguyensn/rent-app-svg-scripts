@@ -1,0 +1,16 @@
+{
+  "name": "rent-app-svg-scripts",
+  "version": "1.0.0",
+  "description": "This app contains scripts related to dealing with SVGs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "@bnguyensn",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.9.0",
+    "eslint-config-prettier": "^6.11.0",
+    "prettier": "^2.1.1"
+  }
+}
