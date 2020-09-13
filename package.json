@@ -4,6 +4,7 @@
   "description": "This app contains scripts related to dealing with SVGs",
   "main": "index.js",
   "scripts": {
+    "start": "rimraf ./outputs/* && node ./index.js && prettier --write --loglevel=warn \"./outputs/**/*.tsx\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "@bnguyensn",
@@ -12,5 +13,8 @@
     "eslint": "^7.9.0",
     "eslint-config-prettier": "^6.11.0",
     "prettier": "^2.1.1"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.2"
   }
 }
