@@ -1,17 +1,20 @@
 module.exports = function parseSvgFileContent(content, componentName) {
   // This regex matches everything within an <svg> tag
-  const SVG_CONTENT_REGEX = /^\s*(<(g|path|\/g).*)/gm;
+  const SVG_CONTENT_REGEX = /^\s*(<(g|path|\/g|rect).*)/gm;
 
   // This regex matches the class="xxx" and id="xxx" attributes
-  const CLASS_AND_ID_ATTR_REGEX = /(class|id)="\S+"/gm;
+  const ID_ATTR_REGEX = /(id)="\S+"/gm;
+
+  const CLASS_ATTR_REGEX = /(class=)/gm;
 
   const svgContentMatchResults = content.matchAll(SVG_CONTENT_REGEX);
 
   const svgContentTags = [];
   for (const match of svgContentMatchResults) {
-    const withoutClassAndId = match[1].replace(CLASS_AND_ID_ATTR_REGEX, '');
+    const postCleanse1 = match[1].replace(ID_ATTR_REGEX, '');
+    const postCleanse2 = postCleanse1.replace(CLASS_ATTR_REGEX, 'className=');
 
-    svgContentTags.push(withoutClassAndId);
+    svgContentTags.push(postCleanse2);
   }
 
   const svgContent = svgContentTags.join('\n');
