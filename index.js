@@ -6,6 +6,12 @@ const cleanseFileName = require('./src/cleanseFileName');
 const baseInputPath = path.resolve(__dirname, './inputs');
 const baseOutputPath = path.resolve(__dirname, './outputs');
 
+function generateSvgFileButWithNameChanged(inputFilePath, outputFilePath) {
+  const fileContent = fs.readFileSync(inputFilePath, { encoding: 'utf-8' });
+
+  fs.writeFileSync(outputFilePath, fileContent, { encoding: 'utf-8' });
+}
+
 function generateTsxIconFile(
   inputFilePath,
   outputFilePath,
@@ -21,8 +27,6 @@ function generateTsxIconFile(
   fs.writeFileSync(outputFilePath, parsedFileContent, {
     encoding: 'utf-8',
   });
-
-  console.log(`Successfully written ${outputFilePath}`);
 }
 
 function generateTsxIconFileLoop(
@@ -59,16 +63,24 @@ function generateTsxIconFileLoop(
           outputFileNameNoExt
         );
 
-        const outputFilePath = path.resolve(
+        const outputSvgFilePath = path.resolve(
+          curOutputPath,
+          `./${outputFileNameNoExtCleansed}.svg`
+        );
+        const outputTsxFilePath = path.resolve(
           curOutputPath,
           `./${outputFileNameNoExtCleansed}.tsx`
         );
 
+        generateSvgFileButWithNameChanged(inputDirentPath, outputSvgFilePath);
+
         generateTsxIconFile(
           inputDirentPath,
-          outputFilePath,
+          outputTsxFilePath,
           outputFileNameNoExtCleansed
         );
+
+        console.log(`Successfully written ${outputTsxFilePath}`);
       }
     }
   }

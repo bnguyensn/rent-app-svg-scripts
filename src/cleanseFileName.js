@@ -1,3 +1,5 @@
+const numberToWordConverter = require('number-to-words');
+
 function normalCaseToCamelCase(s) {
   return s
     .split(' ')
@@ -5,16 +7,24 @@ function normalCaseToCamelCase(s) {
     .join('');
 }
 
+function removeBadChars(str) {
+  const REGEX = /[\W\d]/gm;
+
+  return str.replace(REGEX, '');
+}
+
+function updateNumbersToWords(str) {
+  const REGEX = /\d+/gm;
+
+  return str.replace(REGEX, (match) =>
+    numberToWordConverter.toWords(Number(match))
+  );
+}
+
 module.exports = function cleanseFileName(fileName) {
-  const NUMBER_REGEX = /\d/;
+  // const cleansed1 = updateNumbersToWords(fileName);
 
-  const fileNameWithoutNumbers = fileName.replace(NUMBER_REGEX, '');
+  const fileNameWithoutBadChars = removeBadChars(fileName);
 
-  const DASH_REGEX = /-\s*(.+)/;
-
-  const dashRegexMatch = fileNameWithoutNumbers.match(DASH_REGEX);
-
-  const fileNameAfterDashRegex = dashRegexMatch ? dashRegexMatch[1] : fileName;
-
-  return normalCaseToCamelCase(fileNameAfterDashRegex);
+  return normalCaseToCamelCase(fileNameWithoutBadChars);
 };

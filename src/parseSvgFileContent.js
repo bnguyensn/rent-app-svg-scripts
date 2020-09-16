@@ -1,26 +1,69 @@
+const fs = require('fs');
+const path = require('path');
+
+// This regex matches everything within an <svg> tag
+const SVG_CONTENT_REGEX = /<(path|d\s|g|circle|rect|\/g)[^>]*>/gm;
+
+// This regex matches the id="xxx" attributes
+const ID_ATTR_REGEX = /(id)="\S+"/gm;
+
+// This regex matches the class="xxx" attributes
+const CLASS_ATTR_REGEX = /(class)="\S+"/gm;
+
+// This regex matches the "class=" text bit
+const CLASS_ATTR_NAME_ONLY_REGEX = /(class=)/gm;
+
+const LINE_BREAK_REGEX = /(\r\n|\n|\r)/gm;
+
+function removeId(str) {
+  return str.replace(ID_ATTR_REGEX, '');
+}
+
+function removeClass(str) {
+  return str.replace(CLASS_ATTR_REGEX, '');
+}
+
+function updateClassToClassName(str) {
+  return str.replace(CLASS_ATTR_NAME_ONLY_REGEX, 'className=');
+}
+
+function removeLineBreaks(str) {
+  return str.replace(LINE_BREAK_REGEX, '');
+}
+
+function changeStyleFill(str) {
+  const STYLE_ATTR_REGEX = /(style="(\S+)")/gm;
+
+  const matches = str.matchAll(STYLE_ATTR_REGEX);
+
+  let newStr = str;
+  for (const match of matches) {
+    newStr.replace(match[2], 'fill:#616161');
+  }
+
+  return newStr;
+}
+
 module.exports = function parseSvgFileContent(content, componentName) {
-  // This regex matches everything within an <svg> tag
-  const SVG_CONTENT_REGEX = /^\s*(<(g|path|\/g|rect).*)/gm;
+  const contentNoNewLine = removeLineBreaks(content);
 
-  const svgContentMatchResults = content.matchAll(SVG_CONTENT_REGEX);
+  fs.writeFileSync(path.resolve(__dirname, 'test.svg'), contentNoNewLine, {
+    encoding: 'utf-8',
+  });
 
-  // This regex matches the id="xxx" attributes
-  const ID_ATTR_REGEX = /(id)="\S+"/gm;
-
-  // This regex matches the class="xxx" attributes
-  const CLASS_ATTR_REGEX = /(class=)/gm;
+  const svgContentMatchResults = contentNoNewLine.matchAll(SVG_CONTENT_REGEX);
 
   // Each element of this array should be a HTML tag string e.g. <g ...> that
   // can be put inside an <svg> tag.
   const svgContentTags = [];
   for (const match of svgContentMatchResults) {
-    // Remove unwanted HTML attributes
-    const postCleanse1 = match[1].replace(ID_ATTR_REGEX, '');
+    const cleanseFns = [removeId];
 
-    // Replace normal HTML attributes their React version
-    const postCleanse2 = postCleanse1.replace(CLASS_ATTR_REGEX, 'className=');
+    const finalStr = cleanseFns.reduce((str, cleanseFn) => {
+      return cleanseFn(str);
+    }, match[0]);
 
-    svgContentTags.push(postCleanse2);
+    svgContentTags.push(finalStr);
   }
 
   const svgContentString = svgContentTags.join('\n');
