@@ -6,17 +6,13 @@ const cleanseFileName = require('./src/cleanseFileName');
 const baseInputPath = path.resolve(__dirname, './inputs');
 const baseOutputPath = path.resolve(__dirname, './outputs');
 
-function generateSvgFileButWithNameChanged(inputFilePath, outputFilePath) {
+function generateSvgFileButWithCleansedFileName(inputFilePath, outputFilePath) {
   const fileContent = fs.readFileSync(inputFilePath, { encoding: 'utf-8' });
 
   fs.writeFileSync(outputFilePath, fileContent, { encoding: 'utf-8' });
 }
 
-function generateTsxIconFile(
-  inputFilePath,
-  outputFilePath,
-  outputFileNameNoExt
-) {
+function generateTsxFile(inputFilePath, outputFilePath, outputFileNameNoExt) {
   const fileContent = fs.readFileSync(inputFilePath, { encoding: 'utf-8' });
 
   const parsedFileContent = parseSvgFileContent(
@@ -72,9 +68,11 @@ function generateTsxIconFileLoop(
           `./${outputFileNameNoExtCleansed}.tsx`
         );
 
-        generateSvgFileButWithNameChanged(inputDirentPath, outputSvgFilePath);
-
-        generateTsxIconFile(
+        generateSvgFileButWithCleansedFileName(
+          inputDirentPath,
+          outputSvgFilePath
+        );
+        generateTsxFile(
           inputDirentPath,
           outputTsxFilePath,
           outputFileNameNoExtCleansed
